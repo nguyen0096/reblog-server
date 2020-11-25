@@ -1,0 +1,9 @@
+rb_DB_HOST: localhost
+rb_DB_PORT: 5432
+rb_DB_USER: reblog
+rb_DB_PASSWORD: reblog
+rb_DB_NAME: reblog
+rb_DB_MAXCONN: 1
+rb_DB_MINCONN: 1
+rb_DB_CONN_LIFETIME: 60
+rb_DB_CONN_IDLETIME: 60
