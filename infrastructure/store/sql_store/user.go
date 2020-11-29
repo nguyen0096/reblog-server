@@ -2,8 +2,8 @@ package database
 
 import (
 	"fmt"
-	"reblog-auth/domain/entity"
-	"reblog-auth/domain/repository"
+	"reblog-server/domain/entity"
+	"reblog-server/domain/repository"
 
 	"github.com/jmoiron/sqlx"
 )

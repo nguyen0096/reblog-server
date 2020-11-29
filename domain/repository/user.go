@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"reblog-auth/domain/entity"
+	"reblog-server/domain/entity"
 )
 
 type UserRepository interface {

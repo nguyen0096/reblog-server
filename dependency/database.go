@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
-	"reblog-auth/config"
-
-	"github.com/jmoiron/sqlx"
+	"reblog-server/config"
 )
 
 func NewPostgreSQLConnection() (*sqlx.DB, error) {

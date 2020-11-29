@@ -1,24 +1,57 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"net"
+	"net/http"
 
-	"reblog-auth/config"
-	"reblog-auth/dependency"
-	"reblog-auth/infrastructure/persistence/database"
+	"github.com/gorilla/mux"
+
+	"reblog-server/config"
 )
 
+type Server struct {
+	Router *mux.Router
+
+	Config *config.Config
+
+	Server *http.Server
+}
+
 func main() {
-	config.InitConfig()
+	s := NewServer()
 
-	pgConn, _ := dependency.NewPostgreSQLConnection()
+	s.Start()
+}
 
-	userRepo := database.NewUserRepository(pgConn)
+func NewServer() *Server {
+	rootRouter := mux.NewRouter()
 
-	user, err := userRepo.GetUserByID("1")
-	if err != nil {
-		panic(err)
+	appConfig := config.NewConfig()
+
+	return &Server{
+		Router: rootRouter,
+		Config: appConfig,
+	}
+}
+
+func (s *Server) Start() {
+	log.Println("Starting server...")
+	var handler http.Handler = s.Router
+
+	s.Server = &http.Server{
+		Handler: handler,
 	}
 
-	fmt.Printf("App started! %v", user)
+	listener, err := net.Listen("tcp", ":6969")
+	if err != nil {
+		log.Fatalf("failed to listen on port 6969. error: %v", err)
+	}
+
+	log.Printf("Server is listening on %v \n", listener.Addr().String())
+
+	err = s.Server.Serve(listener)
+	if err != nil {
+		log.Fatalf("failed to serve http server. error: %v", err)
+	}
 }

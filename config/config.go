@@ -20,11 +20,8 @@ type Config struct {
 	}
 }
 
-var (
-	AppConfig = &Config{}
-)
-
-func InitConfig() {
+// NewConfig returns struct of application configurations
+func NewConfig() *Config {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
@@ -33,6 +30,7 @@ func InitConfig() {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 
+	AppConfig := &Config{}
 	AppConfig.Database.Host = viper.GetString("rb_db_host")
 	AppConfig.Database.Port = viper.GetInt("rb_db_port")
 	AppConfig.Database.User = viper.GetString("rb_db_user")
@@ -42,4 +40,6 @@ func InitConfig() {
 	AppConfig.Database.MinConnection = viper.GetInt("rb_DB_MINCONN")
 	AppConfig.Database.MaxLifeTimeConnection = viper.GetFloat64("rb_DB_CONN_LIFETIME")
 	AppConfig.Database.MaxIdleTimeConnection = viper.GetFloat64("rb_DB_CONN_IDLETIME")
+
+	return AppConfig
 }
