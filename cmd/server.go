@@ -4,12 +4,15 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 
+	"reblog-server/api"
 	"reblog-server/config"
 )
 
+// Server ...
 type Server struct {
 	Router *mux.Router
 
@@ -24,6 +27,7 @@ func main() {
 	s.Start()
 }
 
+// NewServer ...
 func NewServer() *Server {
 	rootRouter := mux.NewRouter()
 
@@ -35,17 +39,24 @@ func NewServer() *Server {
 	}
 }
 
+// Start ...
 func (s *Server) Start() {
 	log.Println("Starting server...")
-	var handler http.Handler = s.Router
+
+	api.Init(s.Router)
 
 	s.Server = &http.Server{
-		Handler: handler,
+		Handler: s.Router,
+		// Addr:         "127.0.0.1:8080",
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
 	}
 
-	listener, err := net.Listen("tcp", ":6969")
+	// log.Fatal(s.Server.ListenAndServe())
+
+	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
-		log.Fatalf("failed to listen on port 6969. error: %v", err)
+		log.Fatalf("failed to listen on port 8080. error: %v", err)
 	}
 
 	log.Printf("Server is listening on %v \n", listener.Addr().String())
