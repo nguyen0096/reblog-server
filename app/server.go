@@ -9,43 +9,46 @@ import (
 	api "reblog-server/apiv2"
 	"reblog-server/config"
 	"reblog-server/domain/interactor"
+
+	"github.com/gorilla/mux"
 )
 
-// Server ...
-type Server struct {
-	Router     *http.ServeMux
+// ServerIface ...
+type ServerIface interface {
+	Start()
+}
+
+// server ...
+type server struct {
+	Router     *mux.Router
 	Config     *config.Config
 	Interactor interactor.Interactor
 }
 
-// NewServer ...
-func NewServer() *Server {
-	appConfig := config.NewConfig()
-	rootRouter := http.NewServeMux()
+// NewServer initializes instances of dependencies
+func NewServer() ServerIface {
+	conf := config.NewConfig()
+	router := mux.NewRouter()
 	iter := interactor.NewInteractor()
 
-	return &Server{
-		Config:     appConfig,
-		Router:     rootRouter,
+	return &server{
+		Config:     conf,
+		Router:     router,
 		Interactor: iter,
 	}
 }
 
 // Start ...
-func (s *Server) Start() {
+func (s *server) Start() {
 	log.Println("Starting server...")
 
 	api.Init(s.Router)
 
-	// s.Router.Run()
 	srv := &http.Server{
-		Handler: s.Router,
-		// Addr:         "127.0.0.1:8080",
+		Handler:      AddContext(s.Router),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-
-	// log.Fatal(s.Server.ListenAndServe())
 
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
