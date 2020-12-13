@@ -6,11 +6,12 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"reblog-server/web"
+	"reblog-server/domain/interactor"
 )
 
 type API struct {
-	Routes *Routes
+	Routes     *Routes
+	Interactor interactor.Interactor
 }
 
 type Routes struct {
@@ -20,7 +21,9 @@ type Routes struct {
 }
 
 // Init ...
-func Init(r *mux.Router) *API {
+func Init(r *mux.Router, iter interactor.Interactor) *API {
+	setInteractor(iter)
+
 	userMux := http.NewServeMux()
 	initUser(userMux)
 	r.Handle("/users", userMux)
@@ -71,11 +74,12 @@ func dummyHandler(w http.ResponseWriter, r *http.Request) {
 
 // Todos
 func (api *API) initTodos() {
-	api.Routes.ToDos.Handle("", web.NewHandler(getAllTodos)).Methods("GET")
+	api.Routes.ToDos.Handle("", APIHandler(getAllTodos)).Methods("GET")
 }
 
-func getAllTodos(c *web.Context, w http.ResponseWriter, r *http.Request) (int, error) {
+func getAllTodos(iter interactor.Interactor, w http.ResponseWriter, r *http.Request) (int, error) {
 	log.Println("getAllTodos")
+	iter.Todos().GetAllTodos()
 	http.Error(w, "Sorry!", http.StatusUnauthorized)
 	return 0, nil
 }

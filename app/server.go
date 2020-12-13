@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"sync"
 	"time"
 
 	api "reblog-server/apiv2"
@@ -18,6 +19,9 @@ type ServerIface interface {
 	Start()
 }
 
+var once sync.Once
+var instance *server
+
 // server ...
 type server struct {
 	Router     *mux.Router
@@ -27,22 +31,27 @@ type server struct {
 
 // NewServer initializes instances of dependencies
 func NewServer() ServerIface {
-	conf := config.NewConfig()
-	router := mux.NewRouter()
-	iter := interactor.NewInteractor()
 
-	return &server{
-		Config:     conf,
-		Router:     router,
-		Interactor: iter,
-	}
+	once.Do(func() {
+		conf := config.NewConfig()
+		router := mux.NewRouter()
+		iter := interactor.NewInteractor()
+
+		api.Init(router, iter)
+
+		instance = &server{
+			Config:     conf,
+			Router:     router,
+			Interactor: iter,
+		}
+	})
+
+	return instance
 }
 
 // Start ...
 func (s *server) Start() {
 	log.Println("Starting server...")
-
-	api.Init(s.Router)
 
 	srv := &http.Server{
 		Handler:      AddContext(s.Router),
