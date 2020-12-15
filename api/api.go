@@ -1,17 +1,14 @@
-package apiv2
+package api
 
 import (
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
-
-	"reblog-server/domain/interactor"
 )
 
 type API struct {
-	Routes     *Routes
-	Interactor interactor.Interactor
+	Routes *Routes
 }
 
 type Routes struct {
@@ -21,8 +18,7 @@ type Routes struct {
 }
 
 // Init ...
-func Init(r *mux.Router, iter interactor.Interactor) *API {
-	setInteractor(iter)
+func Init(r *mux.Router) *API {
 
 	userMux := http.NewServeMux()
 	initUser(userMux)
@@ -77,9 +73,8 @@ func (api *API) initTodos() {
 	api.Routes.ToDos.Handle("", APIHandler(getAllTodos)).Methods("GET")
 }
 
-func getAllTodos(iter interactor.Interactor, w http.ResponseWriter, r *http.Request) (int, error) {
+func getAllTodos(w http.ResponseWriter, r *http.Request) (int, error) {
 	log.Println("getAllTodos")
-	iter.Todos().GetAllTodos()
 	http.Error(w, "Sorry!", http.StatusUnauthorized)
 	return 0, nil
 }

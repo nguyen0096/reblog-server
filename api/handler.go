@@ -1,8 +1,7 @@
-package apiv2
+package api
 
 import (
 	"net/http"
-	"reblog-server/domain/interactor"
 )
 
 var (
@@ -10,21 +9,19 @@ var (
 )
 
 type BaseHandler struct {
-	Interactor interactor.Interactor
 }
 
-func setInteractor(iter interactor.Interactor) {
-	baseHandler.Interactor = iter
+func setInteractor() {
 }
 
 // Handler ...
 type Handler struct {
 	BaseHandler
-	H func(iter interactor.Interactor, w http.ResponseWriter, r *http.Request) (int, error)
+	H func(w http.ResponseWriter, r *http.Request) (int, error)
 }
 
 func (ah Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if status, err := ah.H(ah.BaseHandler.Interactor, w, r); err != nil {
+	if status, err := ah.H(w, r); err != nil {
 		switch status {
 		case http.StatusNotFound:
 			http.Error(w, "You found nothing? Maybe another time", http.StatusInternalServerError)
@@ -34,7 +31,7 @@ func (ah Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func APIHandler(fn func(iter interactor.Interactor, w http.ResponseWriter, r *http.Request) (int, error)) http.Handler {
+func APIHandler(fn func(w http.ResponseWriter, r *http.Request) (int, error)) http.Handler {
 	return &Handler{
 		BaseHandler: baseHandler,
 		H:           fn,

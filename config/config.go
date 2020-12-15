@@ -43,3 +43,23 @@ func NewConfig() *Config {
 
 	return AppConfig
 }
+
+func (c *Config) GetHostname() string {
+	return c.Database.Host
+}
+
+func (c *Config) GetPort() int {
+	return c.Database.Port
+}
+
+func (c *Config) GetUser() string {
+	return c.Database.User
+}
+
+func (c *Config) GetPassword() string {
+	return c.Database.Password
+}
+
+func (c *Config) GetDatabase() string {
+	return c.Database.Name
+}

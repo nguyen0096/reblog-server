@@ -7,46 +7,55 @@ import (
 	"sync"
 	"time"
 
-	api "reblog-server/apiv2"
+	"reblog-server/api"
 	"reblog-server/config"
-	"reblog-server/domain/interactor"
+	"reblog-server/dependency"
 
 	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 )
-
-// ServerIface ...
-type ServerIface interface {
-	Start()
-}
 
 var once sync.Once
 var instance *server
 
 // server ...
 type server struct {
-	Router     *mux.Router
-	Config     *config.Config
-	Interactor interactor.Interactor
+	Router *mux.Router
+	config *config.Config
+	DB     *sqlx.DB
 }
 
 // NewServer initializes instances of dependencies
-func NewServer() ServerIface {
+func NewServer() dependency.IServer {
 
 	once.Do(func() {
 		conf := config.NewConfig()
 		router := mux.NewRouter()
-		iter := interactor.NewInteractor()
 
-		api.Init(router, iter)
+		api.Init(router)
 
 		instance = &server{
-			Config:     conf,
-			Router:     router,
-			Interactor: iter,
+			config: conf,
+			Router: router,
 		}
 	})
 
 	return instance
+}
+
+// GETTERS
+
+func (s *server) Config() dependency.IConfig {
+	return s.config
+}
+
+func (s *server) Database() *sqlx.DB {
+	return s.DB
+}
+
+// SETTERS
+func (s *server) SetDatabaseConnection(db *sqlx.DB) {
+	s.DB = db
 }
 
 // Start ...

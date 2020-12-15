@@ -1,11 +1,19 @@
 package main
 
 import (
-	rb_app "reblog-server/app"
+	"log"
+	"reblog-server/app"
+	"reblog-server/infra/database"
 )
 
 func main() {
-	s := rb_app.NewServer()
+	srv := app.NewServer()
 
-	s.Start()
+	db := database.NewPostgresConnection(srv.Config())
+	srv.SetDatabaseConnection(db)
+
+	result, err := srv.Database().Exec("INSERT INTO rb_core.user (username, first_name, last_name, address) VALUES ($1, $2, $3, $4)", "jmoiron", "Jason", "Moiron", "jmoiron@jmoiron.net")
+
+	log.Printf("error: %v", err)
+	log.Printf("result: %v", result)
 }
