@@ -4,7 +4,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"sync"
 	"time"
 
 	"reblog-server/api"
@@ -15,32 +14,29 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var once sync.Once
-var instance *server
-
 // server ...
 type server struct {
 	Router *mux.Router
 	config *config.Config
 	DB     *sqlx.DB
+
+	Store      dependency.IStore
+	Interactor dependency.IInteractor
 }
 
 // NewServer initializes instances of dependencies
 func NewServer() dependency.IServer {
+	conf := config.NewConfig()
+	router := mux.NewRouter()
 
-	once.Do(func() {
-		conf := config.NewConfig()
-		router := mux.NewRouter()
+	srv := &server{
+		config: conf,
+		Router: router,
+	}
 
-		api.Init(router)
+	api.Init(srv, router)
 
-		instance = &server{
-			config: conf,
-			Router: router,
-		}
-	})
-
-	return instance
+	return srv
 }
 
 // GETTERS
@@ -56,6 +52,14 @@ func (s *server) Database() *sqlx.DB {
 // SETTERS
 func (s *server) SetDatabaseConnection(db *sqlx.DB) {
 	s.DB = db
+}
+
+func (s *server) SetStore(store dependency.IStore) {
+	s.Store = store
+}
+
+func (s *server) SetInteractor(iter dependency.IInteractor) {
+	s.Interactor = iter
 }
 
 // Start ...

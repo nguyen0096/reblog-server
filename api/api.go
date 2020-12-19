@@ -3,11 +3,13 @@ package api
 import (
 	"log"
 	"net/http"
+	"reblog-server/dependency"
 
 	"github.com/gorilla/mux"
 )
 
 type API struct {
+	Server dependency.IServer
 	Routes *Routes
 }
 
@@ -15,11 +17,11 @@ type Routes struct {
 	Root *mux.Router
 
 	ToDos *mux.Router
+	Dummy *mux.Router
 }
 
 // Init ...
-func Init(r *mux.Router) *API {
-
+func Init(srv dependency.IServer, r *mux.Router) *API {
 	userMux := http.NewServeMux()
 	initUser(userMux)
 	r.Handle("/users", userMux)
@@ -36,8 +38,10 @@ func Init(r *mux.Router) *API {
 
 	api.Routes.Root = r
 	api.Routes.ToDos = api.Routes.Root.PathPrefix("/todos").Subrouter()
+	api.Routes.Dummy = api.Routes.Root.PathPrefix("/dummy").Subrouter()
 
 	api.initTodos()
+	api.initDummy()
 
 	return api
 }

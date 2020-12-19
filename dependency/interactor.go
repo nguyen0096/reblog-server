@@ -1,7 +1,7 @@
 package dependency
 
-// Interactor ...
-type Interactor interface {
+// IInteractor ...
+type IInteractor interface {
 	User() IUserInteractor
 	Todo() ITodoInteractor
 }

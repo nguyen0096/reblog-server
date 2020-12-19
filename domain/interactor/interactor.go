@@ -5,6 +5,7 @@ import (
 )
 
 type baseInteractor struct {
+	store       dependency.IStore
 	interactors interactors
 }
 
@@ -13,9 +14,11 @@ type interactors struct {
 	user UserInteractor
 }
 
-// NewInteractor ...
-func NewInteractor() dependency.Interactor {
-	base := &baseInteractor{}
+// New ...
+func New(store dependency.IStore) dependency.IInteractor {
+	base := &baseInteractor{
+		store: store,
+	}
 
 	base.interactors.user = UserInteractor{}
 	base.interactors.todo = TodoInteractor{}

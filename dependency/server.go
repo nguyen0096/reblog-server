@@ -12,6 +12,8 @@ type IServer interface {
 
 	// SETTERS
 	SetDatabaseConnection(db *sqlx.DB)
+	SetStore(store IStore)
+	SetInteractor(iter IInteractor)
 
 	// methods
 	Start()
