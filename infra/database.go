@@ -1,4 +1,4 @@
-package database
+package infra
 
 import (
 	"fmt"
@@ -10,6 +10,7 @@ import (
 	"reblog-server/dependency"
 )
 
+// NewPostgresConnection ...
 func NewPostgresConnection(conf dependency.IConfig) *sqlx.DB {
 	connString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		conf.GetHostname(),

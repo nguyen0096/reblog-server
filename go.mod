@@ -14,4 +14,5 @@ require (
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/spf13/viper v1.7.1
 	golang.org/x/sys v0.0.0-20201211090839-8ad439b19e0f // indirect
+	google.golang.org/appengine v1.6.1
 )

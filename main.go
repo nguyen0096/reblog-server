@@ -2,18 +2,27 @@ package main
 
 import (
 	"log"
+
 	"reblog-server/app"
-	"reblog-server/infra/database"
+	"reblog-server/infra"
+	"reblog-server/store/sqlstore"
 )
 
 func main() {
 	srv := app.NewServer()
 
-	db := database.NewPostgresConnection(srv.Config())
+	db := infra.NewPostgresConnection(srv.Config())
 	srv.SetDatabaseConnection(db)
 
-	result, err := srv.Database().Exec("INSERT INTO rb_core.user (username, first_name, last_name, address) VALUES ($1, $2, $3, $4)", "jmoiron", "Jason", "Moiron", "jmoiron@jmoiron.net")
+	store := sqlstore.New(db)
 
-	log.Printf("error: %v", err)
-	log.Printf("result: %v", result)
+	res, err := store.User().GetUserById(`1`)
+	if err != nil {
+		log.Fatalf("Failed to get user by id")
+	}
+
+	log.Printf("Result: %v", res)
+	// result, err := srv.Database().Exec("INSERT INTO rb_core.user (username, first_name, last_name, address) VALUES ($1, $2, $3, $4)", "jmoiron", "Jason", "Moiron", "jmoiron@jmoiron.net")
+	// log.Printf("error: %v", err)
+	// log.Printf("result: %v", result)
 }

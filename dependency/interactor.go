@@ -2,8 +2,8 @@ package dependency
 
 // Interactor ...
 type Interactor interface {
-	IUserInteractor
-	ITodoInteractor
+	User() IUserInteractor
+	Todo() ITodoInteractor
 }
 
 type IUserInteractor interface {

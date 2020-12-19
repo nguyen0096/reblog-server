@@ -1,3 +1,3 @@
-package interactors
+package interactor
 
 type TodoInteractor struct{}
