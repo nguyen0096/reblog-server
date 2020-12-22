@@ -14,11 +14,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// server ...
+type HandlerFunc func(*api.Context)
+
+type HandlersChain []HandlerFunc
+
 type server struct {
-	Router *mux.Router
 	config *config.Config
-	DB     *sqlx.DB
+	Router *mux.Router
+
+	DB *sqlx.DB
 
 	Store      dependency.IStore
 	Interactor dependency.IInteractor
