@@ -38,7 +38,8 @@ func NewServer() dependency.IServer {
 		Router: router,
 	}
 
-	api.Init(srv, router)
+	a := api.NewAPI(srv, router)
+	a.Init()
 
 	return srv
 }
@@ -71,7 +72,7 @@ func (s *server) Start() {
 	log.Println("Starting server...")
 
 	srv := &http.Server{
-		Handler:      AddContext(s.Router),
+		Handler:      s.Router,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

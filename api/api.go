@@ -2,83 +2,61 @@ package api
 
 import (
 	"log"
-	"net/http"
 	"reblog-server/dependency"
 
 	"github.com/gorilla/mux"
 )
 
-type API struct {
+type IApi interface {
+	Init()
+	GetRoutes() *Routes
+	NewWrapHandler(fn func(ctx *Context) error) *Handler
+}
+
+// =================== Implementation ===================
+
+type api struct {
 	Server dependency.IServer
 	Routes *Routes
 }
 
-type Routes struct {
-	Root *mux.Router
-
-	ToDos *mux.Router
-	Dummy *mux.Router
-}
-
-// Init ...
-func Init(srv dependency.IServer, r *mux.Router) *API {
-	userMux := http.NewServeMux()
-	initUser(userMux)
-	r.Handle("/users", userMux)
-
-	groupMux := http.NewServeMux()
-	initGroup(groupMux)
-	r.Handle("/groups", groupMux)
-
-	r.Handle("/dummy", http.HandlerFunc(dummyHandler))
-
-	api := &API{
-		Routes: &Routes{},
+func NewAPI(srv dependency.IServer, r *mux.Router) IApi {
+	a := api{
+		Server: srv,
+		Routes: &Routes{
+			Root: &Router{Mux: r},
+		},
 	}
 
-	api.Routes.Root = r
-	api.Routes.ToDos = api.Routes.Root.PathPrefix("/todos").Subrouter()
-	api.Routes.Dummy = api.Routes.Root.PathPrefix("/dummy").Subrouter()
-
-	api.initTodos()
-	api.initDummy()
-
-	return api
+	return a
 }
 
-// USERS
-func initUser(r *http.ServeMux) {
-	r.Handle("/", http.HandlerFunc(getUsers))
+func (a api) Init() {
+	a.InitUser()
 }
 
-func getUsers(w http.ResponseWriter, r *http.Request) {
-	log.Println("getUsers")
-	log.Println(r.Context().Value("username"))
-	w.Write([]byte("getUsers"))
+func (a api) NewWrapHandler(fn func(ctx *Context) error) *Handler {
+	ctx := &Context{
+		Server: a.Server,
+	}
+	return &Handler{
+		ctx:     ctx,
+		Handler: fn,
+	}
 }
 
-// GROUPS
-func initGroup(r *http.ServeMux) {
-	r.Handle("/", http.HandlerFunc(getGroups))
+func (a api) GetRoutes() *Routes {
+	return a.Routes
 }
 
-func getGroups(w http.ResponseWriter, r *http.Request) {
-	log.Println("getGroups")
-	w.Write([]byte("getGroups"))
+func (a *api) InitUser() {
+	a.Routes.User = &Router{Mux: a.Routes.Root.Mux.PathPrefix("/user").Subrouter()}
+
+	a.Routes.User.Mux.Handle("", a.NewWrapHandler(createNewUser)).Methods("GET")
 }
 
-// Dummy
-func dummyHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("[dummyHandler] %v", r.URL.RawQuery)
-}
-
-// Todos
-func (api *API) initTodos() {
-	api.Routes.ToDos.Handle("", APIHandler(getAllTodos)).Methods("GET")
-}
-
-func getAllTodos(w http.ResponseWriter, r *http.Request) (int, error) {
-	log.Println("getAllTodos")
-	http.Error(w, "Sorry!", http.StatusUnauthorized)
-	return 0, nil
+func createNewUser(ctx *Context) error {
+	log.Println("createNewUser")
+	log.Printf("Get TestString: %v", ctx.TestString)
+	return nil
 }
