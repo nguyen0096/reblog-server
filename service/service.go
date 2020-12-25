@@ -1,13 +1,7 @@
 package handler
 
-import "reblog-server/dependency"
-
-type service struct {
-	user *userService
+type Service interface {
+	User() UserService
 }
-
-func NewService() dependency.IService {
-	return service{
-		user: NewUserService()
-	}
+type UserService interface {
 }
