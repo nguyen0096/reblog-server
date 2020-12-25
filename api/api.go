@@ -16,13 +16,13 @@ type IApi interface {
 // =================== Implementation ===================
 
 type api struct {
-	Server dependency.IServer
-	Routes *Routes
+	Service dependency.IService
+	Routes  *Routes
 }
 
-func NewAPI(srv dependency.IServer, r *mux.Router) IApi {
+func NewAPI(s dependency.IService, r *mux.Router) IApi {
 	a := api{
-		Server: srv,
+		Service: s,
 		Routes: &Routes{
 			Root: &Router{Mux: r},
 		},
@@ -36,9 +36,7 @@ func (a api) Init() {
 }
 
 func (a api) NewWrapHandler(fn func(ctx *Context) error) *Handler {
-	ctx := &Context{
-		Server: a.Server,
-	}
+	ctx := &Context{}
 	return &Handler{
 		ctx:     ctx,
 		Handler: fn,

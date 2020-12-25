@@ -3,24 +3,24 @@ package sqlstore
 import (
 	"database/sql"
 	"fmt"
-	"reblog-server/domain/entity"
+	"reblog-server/model"
 )
 
 type userSqlStore struct {
-	store *sqlstore
+	base *baseSqlStore
 }
 
-func NewUserSqlStore(store *sqlstore) *userSqlStore {
+func newUserStore(store *baseSqlStore) *userSqlStore {
 	return &userSqlStore{
-		store: store,
+		base: store,
 	}
 }
 
-func (s *userSqlStore) GetUserById(id string) (*entity.User, error) {
-	user := entity.User{}
+func (s userSqlStore) Get(id string) (*model.User, error) {
+	user := model.User{}
 
 	queryString := `SELECT id, username, first_name, last_name FROM rb_core.user WHERE id=$1`
-	row := s.store.db.QueryRow(queryString, id)
+	row := s.base.db.QueryRow(queryString, id)
 	err := row.Scan(&user.ID, &user.Username, &user.FirstName, &user.LastName)
 	if err != nil {
 		if err == sql.ErrNoRows {

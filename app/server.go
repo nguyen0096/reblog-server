@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	// "reblog-server/api"
 	"reblog-server/api"
 	"reblog-server/config"
 	"reblog-server/dependency"
@@ -38,8 +39,10 @@ func NewServer() dependency.IServer {
 		Router: router,
 	}
 
-	a := api.NewAPI(srv, router)
-	a.Init()
+	// a := api.NewAPI(srv, router)
+	// a.Init()
+
+	// api := gin.New()
 
 	return srv
 }

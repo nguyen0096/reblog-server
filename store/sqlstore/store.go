@@ -1,30 +1,31 @@
 package sqlstore
 
 import (
-	"reblog-server/dependency"
+	"reblog-server/store"
 
 	"github.com/jmoiron/sqlx"
 )
 
-type sqlstore struct {
+type baseSqlStore struct {
 	db     *sqlx.DB
-	stores stores
+	stores *sqlStores
 }
 
-type stores struct {
+type sqlStores struct {
 	user *userSqlStore
 }
 
-func New(db *sqlx.DB) dependency.IStore {
-	store := &sqlstore{
-		db: db,
+func New(db *sqlx.DB) store.Store {
+	store := &baseSqlStore{
+		db:     db,
+		stores: &sqlStores{},
 	}
 
-	store.stores.user = NewUserSqlStore(store)
+	store.stores.user = newUserStore(store)
 
 	return store
 }
 
-func (c *sqlstore) User() dependency.IUserStore {
+func (c *baseSqlStore) User() store.UserStore {
 	return c.stores.user
 }

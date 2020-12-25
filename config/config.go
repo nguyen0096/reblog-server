@@ -20,8 +20,12 @@ type Config struct {
 	}
 }
 
+var (
+	App *Config
+)
+
 // NewConfig returns struct of application configurations
-func NewConfig() *Config {
+func InitConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
@@ -30,36 +34,14 @@ func NewConfig() *Config {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 
-	AppConfig := &Config{}
-	AppConfig.Database.Host = viper.GetString("rb_db_host")
-	AppConfig.Database.Port = viper.GetInt("rb_db_port")
-	AppConfig.Database.User = viper.GetString("rb_db_user")
-	AppConfig.Database.Password = viper.GetString("rb_db_password")
-	AppConfig.Database.Name = viper.GetString("rb_db_name")
-	AppConfig.Database.MaxConnection = viper.GetInt("RB_DB_MAXCONN")
-	AppConfig.Database.MinConnection = viper.GetInt("rb_DB_MINCONN")
-	AppConfig.Database.MaxLifeTimeConnection = viper.GetFloat64("rb_DB_CONN_LIFETIME")
-	AppConfig.Database.MaxIdleTimeConnection = viper.GetFloat64("rb_DB_CONN_IDLETIME")
-
-	return AppConfig
-}
-
-func (c *Config) GetHostname() string {
-	return c.Database.Host
-}
-
-func (c *Config) GetPort() int {
-	return c.Database.Port
-}
-
-func (c *Config) GetUser() string {
-	return c.Database.User
-}
-
-func (c *Config) GetPassword() string {
-	return c.Database.Password
-}
-
-func (c *Config) GetDatabase() string {
-	return c.Database.Name
+	App = &Config{}
+	App.Database.Host = viper.GetString("rb_db_host")
+	App.Database.Port = viper.GetInt("rb_db_port")
+	App.Database.User = viper.GetString("rb_db_user")
+	App.Database.Password = viper.GetString("rb_db_password")
+	App.Database.Name = viper.GetString("rb_db_name")
+	App.Database.MaxConnection = viper.GetInt("RB_DB_MAXCONN")
+	App.Database.MinConnection = viper.GetInt("rb_DB_MINCONN")
+	App.Database.MaxLifeTimeConnection = viper.GetFloat64("rb_DB_CONN_LIFETIME")
+	App.Database.MaxIdleTimeConnection = viper.GetFloat64("rb_DB_CONN_IDLETIME")
 }

@@ -1,4 +1,4 @@
-package infra
+package config
 
 import (
 	"fmt"
@@ -6,18 +6,17 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-
-	"reblog-server/dependency"
 )
 
-// NewPostgresConnection ...
-func NewPostgresConnection(conf dependency.IConfig) *sqlx.DB {
+// NewPostgresSQLConnection ...
+func NewPostgresSQLConnection() *sqlx.DB {
 	connString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		conf.GetHostname(),
-		conf.GetPort(),
-		conf.GetUser(),
-		conf.GetPassword(),
-		conf.GetDatabase())
+		App.Database.Host,
+		App.Database.Port,
+		App.Database.User,
+		App.Database.Password,
+		App.Database.Name,
+	)
 
 	db, err := sqlx.Connect("postgres", connString)
 	// db.SetConnMaxIdleTime(time.Duration(databaseConfig.MaxIdleTimeConnection * float64(time.Second)))
@@ -25,7 +24,7 @@ func NewPostgresConnection(conf dependency.IConfig) *sqlx.DB {
 	// db.SetMaxOpenConns(databaseConfig.MaxConnection)
 	// db.SetMaxIdleConns(databaseConfig.MinConnection)
 	if err != nil {
-		log.Fatalf("Failed to init database connection. [error] %v", err)
+		log.Fatalf("error initialize postgres connection. error: %v", err)
 	}
 
 	return db

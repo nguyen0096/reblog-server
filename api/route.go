@@ -10,5 +10,6 @@ type Routes struct {
 
 type Router struct {
 	Mux         *mux.Router
+	Children    []Router
 	Middlewares []HandlerFunc
 }
