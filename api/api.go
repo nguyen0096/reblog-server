@@ -1,60 +1,53 @@
 package api
 
 import (
+	"fmt"
 	"log"
-	"reblog-server/dependency"
+	"net/http"
+	"reblog-server/app"
+	"reblog-server/config"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
-type IApi interface {
-	Init()
-	GetRoutes() *Routes
-	NewWrapHandler(fn func(ctx *Context) error) *Handler
+type APIServer struct {
+	Server http.Server
+
+	Router *gin.Engine
+	RouterGroups
+
+	Controller app.Controller
 }
 
-// =================== Implementation ===================
-
-type api struct {
-	Service dependency.IService
-	Routes  *Routes
+type RouterGroups struct {
+	User *gin.RouterGroup
 }
 
-func NewAPI(s dependency.IService, r *mux.Router) IApi {
-	a := api{
-		Service: s,
-		Routes: &Routes{
-			Root: &Router{Mux: r},
-		},
+func Init(ctrl app.Controller) *APIServer {
+	api := &APIServer{
+		Router:     gin.New(),
+		Controller: ctrl,
 	}
 
-	return a
+	api.InitUserAPI()
+
+	return api
 }
 
-func (a api) Init() {
-	a.InitUser()
-}
+func (c *APIServer) Run() {
+	log.Println("Starting API Server...")
+	port := fmt.Sprintf(":%s", config.App.API.Port)
 
-func (a api) NewWrapHandler(fn func(ctx *Context) error) *Handler {
-	ctx := &Context{}
-	return &Handler{
-		ctx:     ctx,
-		Handler: fn,
+	srv := &http.Server{
+		Addr:    port,
+		Handler: c.Router,
+	}
+
+	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("failed to listen on port %s. error: %s\n", port, err)
 	}
 }
 
-func (a api) GetRoutes() *Routes {
-	return a.Routes
-}
-
-func (a *api) InitUser() {
-	a.Routes.User = &Router{Mux: a.Routes.Root.Mux.PathPrefix("/user").Subrouter()}
-
-	a.Routes.User.Mux.Handle("", a.NewWrapHandler(createNewUser)).Methods("GET")
-}
-
-func createNewUser(ctx *Context) error {
-	log.Println("createNewUser")
-	log.Printf("Get TestString: %v", ctx.TestString)
-	return nil
+func (c *APIServer) Close() {
+	log.Println("Closing API Server...")
 }
