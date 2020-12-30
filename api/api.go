@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"reblog-server/app"
+	"reblog-server/app/middleware"
 	"reblog-server/config"
 
 	"github.com/gin-gonic/gin"
@@ -20,6 +21,8 @@ type APIServer struct {
 }
 
 type RouterGroups struct {
+	Root *gin.RouterGroup
+
 	User *gin.RouterGroup
 }
 
@@ -28,6 +31,9 @@ func Init(ctrl app.Controller) *APIServer {
 		Router:     gin.New(),
 		Controller: ctrl,
 	}
+	api.RouterGroups.Root = api.Router.Group("/api")
+
+	api.RouterGroups.Root.Use(middleware.Cors())
 
 	api.InitUserAPI()
 
