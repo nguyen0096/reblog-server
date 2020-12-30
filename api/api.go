@@ -36,7 +36,7 @@ func Init(ctrl app.Controller) *APIServer {
 
 func (c *APIServer) Run() {
 	log.Println("Starting API Server...")
-	port := fmt.Sprintf(":%s", config.App.API.Port)
+	port := fmt.Sprintf(":%d", config.App.API.Port)
 
 	srv := &http.Server{
 		Addr:    port,

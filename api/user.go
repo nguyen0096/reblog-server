@@ -1,6 +1,8 @@
 package api
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,5 +13,5 @@ func (c *APIServer) InitUserAPI() {
 }
 
 func (api *APIServer) CreateUser(c *gin.Context) {
-
+	log.Println("CreateUser hit!")
 }
