@@ -22,6 +22,10 @@ type Config struct {
 	API struct {
 		Port int
 	}
+
+	Controller struct {
+		HashCost int
+	}
 }
 
 var (
@@ -50,4 +54,6 @@ func InitConfig() {
 	App.Database.MaxIdleTimeConnection = viper.GetFloat64("rb_DB_CONN_IDLETIME")
 
 	App.API.Port = viper.GetInt("rb_API_PORT")
+
+	App.Controller.HashCost = viper.GetInt("rb_APP_HASHING_COST")
 }

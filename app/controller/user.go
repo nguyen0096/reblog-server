@@ -1,9 +1,11 @@
 package controller
 
 import (
-	"database/sql"
 	"log"
+
+	"reblog-server/config"
 	"reblog-server/dto"
+	"reblog-server/model"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,19 +21,14 @@ func newUserController(base baseController) *userController {
 }
 
 func (c *userController) CreateUser(form dto.LoginForm) error {
-
-	// Check if user existing
-	_, err := c.base.store.User().Get(form.Username)
-
-	if err == sql.ErrNoRows {
-
-	}
-
-	x, err := bcrypt.GenerateFromPassword([]byte("test password"), 4)
+	hashedPw, err := bcrypt.GenerateFromPassword([]byte(form.Password), config.App.Controller.HashCost)
 	if err != nil {
 		log.Println("Failed to generate hashing from password")
+		return err
 	}
-	log.Println(string(x))
-
-	return nil
+	newUser := model.User{
+		Username: form.Username,
+		Password: string(hashedPw),
+	}
+	return c.base.store.User().Create(newUser)
 }

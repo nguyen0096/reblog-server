@@ -26,6 +26,8 @@ type RouterGroups struct {
 	User *gin.RouterGroup
 }
 
+// Implement interface
+
 func Init(ctrl app.Controller) *APIServer {
 	api := &APIServer{
 		Router:     gin.New(),

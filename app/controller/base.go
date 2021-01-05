@@ -6,8 +6,10 @@ import (
 )
 
 type baseController struct {
+	// Children
 	controllers
 
+	// Dependencies
 	store store.Store
 }
 
@@ -24,6 +26,7 @@ func New(store store.Store) app.Controller {
 	return base
 }
 
+// Implement interface
 func (c baseController) User() app.UserController {
 	return c.user
 }

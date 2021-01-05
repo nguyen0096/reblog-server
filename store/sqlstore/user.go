@@ -27,3 +27,12 @@ func (s userSqlStore) Get(username string) (*model.User, error) {
 
 	return &user, nil
 }
+
+func (s userSqlStore) Create(newUser model.User) error {
+	queryString := `INSERT INTO rb_core.user (username, passwor) VALUES (?, ?)`
+	_, err := s.base.db.Exec(queryString, newUser.Username, newUser.Password)
+	if err != nil {
+		return err
+	}
+	return nil
+}
