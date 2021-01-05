@@ -50,7 +50,7 @@ func main() {
 
 	log.Printf("Result: %v", u)
 
-	ctrl := controller.New()
+	ctrl := controller.New(store)
 
 	router := api.Init(ctrl)
 	router.Run()

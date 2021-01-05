@@ -35,7 +35,7 @@ func Init(ctrl app.Controller) *APIServer {
 
 	api.RouterGroups.Root.Use(middleware.Cors())
 
-	api.InitUserAPI()
+	api.initUserAPI()
 
 	return api
 }

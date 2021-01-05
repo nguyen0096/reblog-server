@@ -1,9 +1,14 @@
 package controller
 
-import "reblog-server/app"
+import (
+	"reblog-server/app"
+	"reblog-server/store"
+)
 
 type baseController struct {
 	controllers
+
+	store store.Store
 }
 
 type controllers struct {
@@ -11,7 +16,7 @@ type controllers struct {
 }
 
 // New ...
-func New() app.Controller {
+func New(store store.Store) app.Controller {
 	base := baseController{}
 
 	base.user = newUserController(base)

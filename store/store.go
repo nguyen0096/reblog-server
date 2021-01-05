@@ -9,5 +9,5 @@ type Store interface {
 }
 
 type UserStore interface {
-	Get(id string) (*model.User, error)
+	Get(username string) (*model.User, error)
 }
