@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"reblog-server/app"
+	"log"
 	"reblog-server/store"
 )
 
@@ -18,8 +18,14 @@ type controllers struct {
 }
 
 // New ...
-func New(store store.Store) app.Controller {
-	base := baseController{}
+func New(store store.Store) IController {
+	if store == nil {
+		log.Panicf("nil store param")
+	}
+
+	base := &baseController{
+		store: store,
+	}
 
 	base.user = newUserController(base)
 
@@ -27,6 +33,6 @@ func New(store store.Store) app.Controller {
 }
 
 // Implement interface
-func (c baseController) User() app.UserController {
+func (c baseController) User() IUserController {
 	return c.user
 }

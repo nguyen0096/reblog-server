@@ -43,7 +43,7 @@ func main() {
 
 	store := sqlstore.New(db)
 
-	u, err := store.User().Get(`1`)
+	u, err := store.User().Get(`nguyen01`)
 	if err != nil {
 		log.Printf("failed to get user. error: %v", err)
 	}

@@ -12,6 +12,11 @@ type errorResponse struct {
 	Error      error  `json:"-"`
 }
 
+type response struct {
+	StatusCode int    `json:"status"`
+	Message    string `json:"message"`
+}
+
 func (c *APIServer) debug(format string, args ...interface{}) {
 	// TODO implement debug handler for API
 }
@@ -33,10 +38,6 @@ func (c *APIServer) respond(writer http.ResponseWriter, code int, src interface{
 	writer.Write(body)
 }
 
-// func (c *APIServer) error(w http.ResponseWriter, code int, message string) {
-
-// }
-
 func (c *APIServer) error(w http.ResponseWriter, err error) {
 	var statusCode int
 	var message string
@@ -45,18 +46,23 @@ func (c *APIServer) error(w http.ResponseWriter, err error) {
 	case *json.UnsupportedTypeError, *json.UnmarshalTypeError, *json.SyntaxError:
 		statusCode = http.StatusBadRequest
 		message = "Request body is invalid"
+	// case *pq.Error:
+	// 	log.Println(e.Severity)
+	// 	log.Println(e.Code)
+	// 	log.Println(e.Message)
+	// 	log.Println(e.Detail)
 	default:
 		statusCode = http.StatusInternalServerError
 		message = e.Error()
 	}
+
+	log.Printf("Type: %T - Error: %v", err, err.Error())
 
 	errRes := &errorResponse{
 		StatusCode: statusCode,
 		Message:    message,
 		Error:      err,
 	}
-
-	log.Printf("%v", errRes)
 
 	c.respond(w, statusCode, errRes)
 }

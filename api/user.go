@@ -23,10 +23,20 @@ func (api *APIServer) getUser(c *gin.Context) {
 func (api *APIServer) createUser(c *gin.Context) {
 	var form dto.LoginForm
 	if err := c.ShouldBind(&form); err != nil {
-		api.respond(c.Writer, http.StatusBadRequest, "Invalid form data")
+		api.respond(c.Writer, http.StatusBadRequest, errorResponse{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid form data",
+		})
 	}
 
-	// if err := api.Controller.User().CreateUser(form); err != nil {
-	// 	c.JSON(http.StatusConflict, )
-	// }
+	err := api.Controller.User().CreateUserFromSignup(form)
+	if err != nil {
+		api.error(c.Writer, err)
+		return
+	}
+
+	api.respond(c.Writer, http.StatusCreated, &response{
+		StatusCode: http.StatusAccepted,
+		Message:    "Created new user",
+	})
 }

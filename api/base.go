@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"reblog-server/app"
+	"reblog-server/app/controller"
 	"reblog-server/app/middleware"
 	"reblog-server/config"
 
@@ -17,7 +17,7 @@ type APIServer struct {
 	Router *gin.Engine
 	RouterGroups
 
-	Controller app.Controller
+	Controller controller.IController
 }
 
 type RouterGroups struct {
@@ -28,7 +28,7 @@ type RouterGroups struct {
 
 // Implement interface
 
-func Init(ctrl app.Controller) *APIServer {
+func Init(ctrl controller.IController) *APIServer {
 	api := &APIServer{
 		Router:     gin.New(),
 		Controller: ctrl,

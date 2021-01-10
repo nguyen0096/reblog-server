@@ -2,7 +2,6 @@ package controller
 
 import (
 	"log"
-
 	"reblog-server/config"
 	"reblog-server/dto"
 	"reblog-server/model"
@@ -14,21 +13,26 @@ type userController struct {
 	base *baseController
 }
 
-func newUserController(base baseController) *userController {
+func newUserController(base *baseController) *userController {
 	return &userController{
-		base: &base,
+		base: base,
 	}
 }
 
-func (c *userController) CreateUser(form dto.LoginForm) error {
-	hashedPw, err := bcrypt.GenerateFromPassword([]byte(form.Password), config.App.Controller.HashCost)
-	if err != nil {
+func (c *userController) CreateUserFromSignup(form dto.LoginForm) error {
+	var hashedPw []byte
+	var err error
+
+	if hashedPw, err = bcrypt.GenerateFromPassword([]byte(form.Password), config.App.Controller.HashCost); err != nil {
 		log.Println("Failed to generate hashing from password")
 		return err
 	}
+
 	newUser := model.User{
 		Username: form.Username,
 		Password: string(hashedPw),
 	}
-	return c.base.store.User().Create(newUser)
+
+	err = c.base.store.User().Create(newUser)
+	return err
 }
