@@ -22,6 +22,8 @@ func (api *APIServer) getUser(c *gin.Context) {
 
 func (api *APIServer) createUser(c *gin.Context) {
 	var form dto.LoginForm
+
+	// Parse form data
 	if err := c.ShouldBind(&form); err != nil {
 		api.respond(c.Writer, http.StatusBadRequest, errorResponse{
 			StatusCode: http.StatusBadRequest,

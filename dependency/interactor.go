@@ -1,13 +1,13 @@
 package dependency
 
-// IInteractor ...
-type IInteractor interface {
-	User() IUserInteractor
-	Todo() ITodoInteractor
-}
+// // IInteractor ...
+// type IInteractor interface {
+// 	User() IUserInteractor
+// 	Todo() ITodoInteractor
+// }
 
-type IUserInteractor interface {
-}
+// type IUserInteractor interface {
+// }
 
-type ITodoInteractor interface {
-}
+// type ITodoInteractor interface {
+// }

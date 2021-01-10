@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/lib/pq"
 )
 
 type errorResponse struct {
@@ -46,11 +48,11 @@ func (c *APIServer) error(w http.ResponseWriter, err error) {
 	case *json.UnsupportedTypeError, *json.UnmarshalTypeError, *json.SyntaxError:
 		statusCode = http.StatusBadRequest
 		message = "Request body is invalid"
-	// case *pq.Error:
-	// 	log.Println(e.Severity)
-	// 	log.Println(e.Code)
-	// 	log.Println(e.Message)
-	// 	log.Println(e.Detail)
+	case *pq.Error:
+		log.Println(e.Severity)
+		log.Println(e.Code)
+		log.Println(e.Message)
+		log.Println(e.Detail)
 	default:
 		statusCode = http.StatusInternalServerError
 		message = e.Error()
