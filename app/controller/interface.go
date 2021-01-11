@@ -1,11 +1,13 @@
 package controller
 
-import "reblog-server/dto"
+import (
+	"reblog-server/model"
+)
 
 type IController interface {
 	User() IUserController
 }
 
 type IUserController interface {
-	CreateUserFromSignUp(dto.LoginForm) error
+	CreateUserFromSignUp(user *model.User) error
 }

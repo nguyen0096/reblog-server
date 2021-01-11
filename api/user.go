@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"reblog-server/dto"
+	"reblog-server/model"
 	"reblog-server/utils"
 
 	"github.com/gin-gonic/gin"
@@ -21,28 +21,26 @@ func (api *APIServer) getUser(c *gin.Context) {
 }
 
 func (api *APIServer) createUser(c *gin.Context) {
-	var form dto.LoginForm
+	var user *model.User
+	var err error
 
-	// Parse form data
-	if err := c.ShouldBind(&form); err != nil {
-		api.respond(c.Writer, http.StatusBadRequest, errorResponse{
-			StatusCode: http.StatusBadRequest,
-			Message:    "Invalid form data",
-		})
-
-		utils.Info("%s - %s", "string1", "string2")
-
+	if user, err = model.UserFromJson(c.Request.Body); err != nil {
+		api.error(c.Writer, http.StatusBadRequest, err)
 		return
 	}
 
-	err := api.Controller.User().CreateUserFromSignUp(form)
+	if user == nil {
+		api.error(c.Writer, http.StatusBadRequest, &APIError{Message: "Can't parse JSON data"})
+		return
+	}
+
+	utils.Info("%v", user)
+
+	err = api.Controller.User().CreateUserFromSignUp(user)
 	if err != nil {
-		api.error(c.Writer, err)
+		api.error(c.Writer, http.StatusBadRequest, err)
 		return
 	}
 
-	api.respond(c.Writer, http.StatusCreated, &response{
-		StatusCode: http.StatusAccepted,
-		Message:    "Created new user",
-	})
+	api.respond(c.Writer, http.StatusCreated, nil)
 }
