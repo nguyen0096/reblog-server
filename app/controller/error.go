@@ -5,4 +5,5 @@ type AppError struct {
 	Message string
 	Detail  string
 	Where   string
+	Error   error
 }

@@ -7,6 +7,7 @@ import (
 	"reblog-server/app/controller"
 	"reblog-server/app/middleware"
 	"reblog-server/config"
+	"reblog-server/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,7 +44,7 @@ func Init(ctrl controller.IController) *APIServer {
 }
 
 func (c *APIServer) Run() {
-	log.Println("Starting API Server...")
+	utils.Info("Starting API Server...")
 	port := fmt.Sprintf(":%d", config.App.API.Port)
 
 	srv := &http.Server{
@@ -57,5 +58,5 @@ func (c *APIServer) Run() {
 }
 
 func (c *APIServer) Close() {
-	log.Println("Closing API Server...")
+	utils.Info("Closing API Server...")
 }

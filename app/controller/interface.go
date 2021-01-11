@@ -7,5 +7,5 @@ type IController interface {
 }
 
 type IUserController interface {
-	CreateUserFromSignup(dto.LoginForm) error
+	CreateUserFromSignUp(dto.LoginForm) error
 }

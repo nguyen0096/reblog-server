@@ -2,8 +2,9 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
+
+	"reblog-server/utils"
 
 	"github.com/lib/pq"
 )
@@ -49,16 +50,13 @@ func (c *APIServer) error(w http.ResponseWriter, err error) {
 		statusCode = http.StatusBadRequest
 		message = "Request body is invalid"
 	case *pq.Error:
-		log.Println(e.Severity)
-		log.Println(e.Code)
-		log.Println(e.Message)
-		log.Println(e.Detail)
+		utils.Info("Test")
 	default:
 		statusCode = http.StatusInternalServerError
 		message = e.Error()
 	}
 
-	log.Printf("Type: %T - Error: %v", err, err.Error())
+	utils.Info("Type: %T - Error: %v", err, err.Error())
 
 	errRes := &errorResponse{
 		StatusCode: statusCode,

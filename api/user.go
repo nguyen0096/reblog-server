@@ -1,10 +1,10 @@
 package api
 
 import (
-	"log"
 	"net/http"
 
 	"reblog-server/dto"
+	"reblog-server/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +17,7 @@ func (c *APIServer) initUserAPI() {
 }
 
 func (api *APIServer) getUser(c *gin.Context) {
-	log.Println("GetUser hit!")
+	utils.Info("GetUser hit!")
 }
 
 func (api *APIServer) createUser(c *gin.Context) {
@@ -29,9 +29,13 @@ func (api *APIServer) createUser(c *gin.Context) {
 			StatusCode: http.StatusBadRequest,
 			Message:    "Invalid form data",
 		})
+
+		utils.Info("%s - %s", "string1", "string2")
+
+		return
 	}
 
-	err := api.Controller.User().CreateUserFromSignup(form)
+	err := api.Controller.User().CreateUserFromSignUp(form)
 	if err != nil {
 		api.error(c.Writer, err)
 		return
