@@ -9,6 +9,6 @@ type Store interface {
 }
 
 type UserStore interface {
-	Get(username string) (*model.User, error)
+	GetByUsername(username string) (*model.User, error)
 	Create(newUser *model.User) error
 }

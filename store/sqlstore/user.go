@@ -1,6 +1,7 @@
 package sqlstore
 
 import (
+	"log"
 	"reblog-server/model"
 )
 
@@ -14,14 +15,16 @@ func newUserStore(store *baseSqlStore) *userSqlStore {
 	}
 }
 
-func (s userSqlStore) Get(username string) (*model.User, error) {
+func (s userSqlStore) GetByUsername(username string) (*model.User, error) {
 	user := model.User{}
 
-	queryString := `SELECT id, username, first_name, last_name FROM rb_core.user WHERE username=$1`
-	row := s.base.db.QueryRow(queryString, username)
-	err := row.Scan(&user.ID, &user.Username, &user.FirstName, &user.LastName)
+	// TODO: scan empty column
+	queryString := `SELECT id, username, password FROM rb_core.user WHERE username=$1`
+	row := s.base.db.QueryRowx(queryString, username)
+	err := row.StructScan(&user)
 
 	if err != nil {
+		log.Printf("failed to scan row. err: %v", err)
 		return nil, err
 	}
 

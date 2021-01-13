@@ -10,4 +10,5 @@ type IController interface {
 
 type IUserController interface {
 	CreateUserFromSignUp(user *model.User) error
+	CreateToken(user *model.User) (string, error)
 }

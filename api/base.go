@@ -24,6 +24,7 @@ type APIServer struct {
 type RouterGroups struct {
 	Root *gin.RouterGroup
 
+	Auth *gin.RouterGroup
 	User *gin.RouterGroup
 }
 
@@ -39,6 +40,7 @@ func Init(ctrl controller.IController) *APIServer {
 	api.RouterGroups.Root.Use(middleware.Cors())
 
 	api.initUserAPI()
+	api.initAuthAPI()
 
 	return api
 }

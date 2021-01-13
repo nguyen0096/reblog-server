@@ -10,15 +10,16 @@ type response struct {
 }
 
 type errorResponse struct {
-	Error []error `json:"error"`
+	Error error `json:"error"`
 }
 
+// TODO: figure out best way to send error to client and log it down
 func (c *APIServer) error(w http.ResponseWriter, code int, e error) {
 	var body []byte
 	var err error
 
 	res := errorResponse{
-		Error: []error{e},
+		Error: e,
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

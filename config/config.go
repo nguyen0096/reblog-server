@@ -26,6 +26,10 @@ type Config struct {
 	Controller struct {
 		HashCost int
 	}
+
+	Auth struct {
+		JWTSecret string
+	}
 }
 
 var (
@@ -56,4 +60,6 @@ func InitConfig() {
 	App.API.Port = viper.GetInt("rb_API_PORT")
 
 	App.Controller.HashCost = viper.GetInt("rb_APP_HASHING_COST")
+
+	App.Auth.JWTSecret = viper.GetString("rb_APP_JWT_SECRET")
 }
