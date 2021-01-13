@@ -18,6 +18,8 @@ func newUserStore(store *baseSqlStore) *userSqlStore {
 func (s userSqlStore) GetByUsername(username string) (*model.User, error) {
 	user := model.User{}
 
+	// runtime.Breakpoint()
+
 	// TODO: scan empty column
 	queryString := `SELECT id, username, password FROM rb_core.user WHERE username=$1`
 	row := s.base.db.QueryRowx(queryString, username)
