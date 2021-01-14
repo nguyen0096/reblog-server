@@ -1,8 +1,10 @@
+// FIXME: sqlx can't scan empty column
+
 package sqlstore
 
 import (
-	"log"
 	"reblog-server/model"
+	"reblog-server/utils"
 )
 
 type userSqlStore struct {
@@ -18,15 +20,12 @@ func newUserStore(store *baseSqlStore) *userSqlStore {
 func (s userSqlStore) GetByUsername(username string) (*model.User, error) {
 	user := model.User{}
 
-	// runtime.Breakpoint()
-
-	// TODO: scan empty column
 	queryString := `SELECT id, username, password FROM rb_core.user WHERE username=$1`
 	row := s.base.db.QueryRowx(queryString, username)
 	err := row.StructScan(&user)
 
 	if err != nil {
-		log.Printf("failed to scan row. err: %v", err)
+		utils.Error("Failed to scan row", err)
 		return nil, err
 	}
 
@@ -39,8 +38,6 @@ func (s userSqlStore) Create(newUser *model.User) error {
 	if err != nil {
 		return err
 	}
-
-	// log.Printf("%T", res)
 
 	return nil
 }

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"reblog-server/config"
 	"reblog-server/model"
 	"reblog-server/utils"
@@ -24,8 +23,6 @@ func newUserController(base *baseController) *userController {
 
 func (c *userController) CreateToken(user *model.User) (string, error) {
 	var err error
-
-	log.Println(user.Password)
 
 	queryUser, err := c.base.store.User().GetByUsername(user.Username)
 	if err != nil {

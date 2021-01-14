@@ -1,10 +1,10 @@
 package api
 
 import (
-	"log"
 	"net/http"
 
 	"reblog-server/model"
+	"reblog-server/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +20,7 @@ func (api *APIServer) handleLogin(c *gin.Context) {
 	var err error
 
 	if err = c.ShouldBindJSON(&u); err != nil {
-		log.Printf("failed to parse json. err: %v", err)
+		utils.Error("Failed to parse json", err)
 		api.error(c.Writer, http.StatusBadRequest, err)
 		return
 	}

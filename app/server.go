@@ -72,7 +72,6 @@ package app
 
 // // Start ...
 // func (s *server) Start() {
-// 	log.Println("Starting server...")
 
 // 	srv := &http.Server{
 // 		Handler:      s.Router,
@@ -84,8 +83,6 @@ package app
 // 	if err != nil {
 // 		log.Fatalf("failed to listen on port 8080. error: %v", err)
 // 	}
-
-// 	log.Printf("Server is listening on %v \n", listener.Addr().String())
 
 // 	err = srv.Serve(listener)
 // 	if err != nil {
