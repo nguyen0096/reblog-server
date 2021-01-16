@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 	"os/signal"
-	"reblog-server/api"
-	"reblog-server/app/controller"
 	"reblog-server/config"
+	"reblog-server/controller"
+	"reblog-server/presenter/http"
 	"reblog-server/store/sqlstore"
 	"syscall"
 )
@@ -19,7 +19,7 @@ func main() {
 
 	ctrl := controller.New(store)
 
-	router := api.Init(ctrl)
+	router := http.Init(ctrl)
 	router.Run()
 	defer router.Close()
 

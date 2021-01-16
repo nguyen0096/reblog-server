@@ -1,12 +1,12 @@
-package api
+package http
 
 import (
 	"fmt"
 	"log"
 	"net/http"
-	"reblog-server/app/controller"
-	"reblog-server/app/middleware"
 	"reblog-server/config"
+	"reblog-server/controller"
+	"reblog-server/middleware"
 	"reblog-server/utils"
 
 	"github.com/gin-gonic/gin"
