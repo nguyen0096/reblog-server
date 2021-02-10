@@ -1,36 +1,35 @@
 package http
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"reblog-server/model"
 	"reblog-server/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
 func (c *APIServer) initAuthAPI() {
-	c.Auth = c.Root.Group("/auth")
+	c.Auth = c.Root.PathPrefix("/auth").Subrouter()
 
-	c.Auth.POST("/login", c.handleLogin)
+	c.Auth.HandleFunc("/login", c.handleLogin).Methods("POST")
 }
 
-func (api *APIServer) handleLogin(c *gin.Context) {
+func (api *APIServer) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var u model.User
 	var err error
 
-	if err = c.ShouldBindJSON(&u); err != nil {
+	if err = json.NewDecoder(r.Body).Decode(&u); err != nil {
 		utils.Error("Failed to parse json", err)
-		api.error(c.Writer, http.StatusBadRequest, err)
+		api.error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	token, err := api.Controller.User().CreateToken(&u)
 	if err != nil {
-		api.error(c.Writer, http.StatusBadRequest, err)
+		api.error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, token)
+	api.respond(w, http.StatusOK, token)
 	return
 }

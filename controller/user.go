@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"reblog-server/config"
 	"reblog-server/model"
 	"reblog-server/utils"
+	"reblog-server/utils/config"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -51,8 +51,6 @@ func (c *userController) CreateUserFromSignUp(user *model.User) error {
 	var hashedPw []byte
 	var id uuid.UUID
 	var err error
-
-	utils.Info("%v", user)
 
 	if hashedPw, err = bcrypt.GenerateFromPassword([]byte(user.Password), config.App.Controller.HashCost); err != nil {
 		return err

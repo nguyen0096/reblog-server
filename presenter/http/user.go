@@ -5,42 +5,38 @@ import (
 
 	"reblog-server/model"
 	"reblog-server/utils"
-
-	"github.com/gin-gonic/gin"
 )
 
 func (c *APIServer) initUserAPI() {
-	c.User = c.Root.Group("/user")
+	c.User = c.Root.PathPrefix("/user").Subrouter()
 
-	c.User.GET("", c.getUser)
-	c.User.POST("", c.createUser)
+	c.User.HandleFunc("", c.getUser).Methods("GET")
+	c.User.HandleFunc("", c.createUser).Methods("POST")
 }
 
-func (api *APIServer) getUser(c *gin.Context) {
+func (api *APIServer) getUser(w http.ResponseWriter, r *http.Request) {
 	utils.Info("GetUser hit!")
 }
 
-func (api *APIServer) createUser(c *gin.Context) {
+func (api *APIServer) createUser(w http.ResponseWriter, r *http.Request) {
 	var user *model.User
 	var err error
 
-	if user, err = model.UserFromJson(c.Request.Body); err != nil {
-		api.error(c.Writer, http.StatusBadRequest, err)
+	if user, err = model.UserFromJson(r.Body); err != nil {
+		api.error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if user == nil {
-		api.error(c.Writer, http.StatusBadRequest, &APIError{Message: "Can't parse JSON data"})
+		api.error(w, http.StatusBadRequest, &APIError{Message: "Can't parse JSON data"})
 		return
 	}
-
-	utils.Info("%v", user)
 
 	err = api.Controller.User().CreateUserFromSignUp(user)
 	if err != nil {
-		api.error(c.Writer, http.StatusBadRequest, err)
+		api.error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	api.respond(c.Writer, http.StatusCreated, nil)
+	api.respond(w, http.StatusCreated, nil)
 }

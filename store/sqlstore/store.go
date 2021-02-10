@@ -13,6 +13,7 @@ type baseSqlStore struct {
 
 type sqlStores struct {
 	user *userSqlStore
+	todo *todoSqlStore
 }
 
 func New(db *sqlx.DB) store.Store {
@@ -22,10 +23,15 @@ func New(db *sqlx.DB) store.Store {
 	}
 
 	store.stores.user = newUserStore(store)
+	store.stores.todo = newTodoStore(store)
 
 	return store
 }
 
 func (c *baseSqlStore) User() store.UserStore {
 	return c.stores.user
+}
+
+func (c *baseSqlStore) Todo() store.TodoStore {
+	return c.stores.todo
 }

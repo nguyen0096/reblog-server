@@ -36,7 +36,6 @@ var (
 	App *Config
 )
 
-// NewConfig returns struct of application configurations
 func InitConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

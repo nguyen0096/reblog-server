@@ -1,64 +1,142 @@
 package http
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"reblog-server/config"
+
 	"reblog-server/controller"
 	"reblog-server/middleware"
 	"reblog-server/utils"
+	"reblog-server/utils/config"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
 )
 
 type APIServer struct {
 	Server http.Server
 
-	Router *gin.Engine
+	Mux *mux.Router
 	RouterGroups
-
-	Controller controller.IController
+	Controller controller.Controller
 }
 
 type RouterGroups struct {
-	Root *gin.RouterGroup
+	Root *mux.Router
 
-	Auth *gin.RouterGroup
-	User *gin.RouterGroup
+	Auth *mux.Router
+	User *mux.Router
+	Demo *mux.Router
+	Todo *mux.Router
 }
 
 // Implement interface
 
-func Init(ctrl controller.IController) *APIServer {
+func Init(ctrl controller.Controller) *APIServer {
 	api := &APIServer{
-		Router:     gin.New(),
 		Controller: ctrl,
 	}
-	api.RouterGroups.Root = api.Router.Group("/api")
 
-	api.RouterGroups.Root.Use(middleware.Cors())
+	// Config for all routes
+	api.Mux = mux.NewRouter()
+	api.Mux.NotFoundHandler = api.notFoundHandler()
+	api.Mux.Use(middleware.Logger)
 
+	// API
+	api.Root = api.Mux
+	api.initDemoAPI()
 	api.initUserAPI()
 	api.initAuthAPI()
+	api.initTodoAPI()
 
 	return api
 }
 
 func (c *APIServer) Run() {
-	utils.Info("Starting API Server...")
-	port := fmt.Sprintf(":%d", config.App.API.Port)
+	addr := fmt.Sprintf("%s:%d", "localhost", config.App.API.Port)
 
 	srv := &http.Server{
-		Addr:    port,
-		Handler: c.Router,
+		Addr:    addr,
+		Handler: c.Mux,
 	}
 
+	utils.Info("Listening on http://%s", addr)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("failed to listen on port %s. error: %s\n", port, err)
+		log.Fatalf("failed to listen on %s. error: %s\n", addr, err)
 	}
 }
 
 func (c *APIServer) Close() {
 	utils.Info("Closing API Server...")
+}
+
+func (c *APIServer) notFoundHandler() http.Handler {
+
+	f := func(w http.ResponseWriter, r *http.Request) {
+		utils.Error("Cannot find handler for %s", r.RequestURI)
+	}
+
+	return http.HandlerFunc(f)
+}
+
+type response struct {
+	Data interface{} `json:"data"`
+}
+
+type errorResponse struct {
+	Error error `json:"error"`
+}
+
+// TODO: figure out best way to send error to client and log it down
+func (c *APIServer) error(w http.ResponseWriter, code int, e error) {
+	var body []byte
+	var err error
+
+	res := errorResponse{
+		Error: e,
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	if body, err = json.Marshal(res); err != nil {
+		errorBody := "{\"status\": 500, \"message\": \"Something happened wrong during generating response\"}"
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(errorBody))
+		return
+	}
+
+	w.WriteHeader(code)
+	w.Write(body)
+}
+
+func (c *APIServer) respond(w http.ResponseWriter, code int, data interface{}) {
+	var body []byte
+	var err error
+
+	res := response{
+		Data: data,
+	}
+
+	if body, err = json.Marshal(res); err != nil {
+		errorBody := "{\"status\": 500, \"message\": \"Something happened wrong during generating response\"}"
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(errorBody))
+		return
+	}
+
+	w.WriteHeader(code)
+	w.Write(body)
+}
+
+func (c *APIServer) debug(format string, args ...interface{}) {
+	// TODO implement debug handler for API
+}
+
+type APIError struct {
+	Message string
+}
+
+func (c *APIError) Error() string {
+	return c.Message
 }

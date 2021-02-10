@@ -3,17 +3,18 @@ package main
 import (
 	"os"
 	"os/signal"
-	"reblog-server/config"
 	"reblog-server/controller"
 	"reblog-server/presenter/http"
 	"reblog-server/store/sqlstore"
+	"reblog-server/utils/config"
+	"reblog-server/utils/database"
 	"syscall"
 )
 
 func main() {
 	config.InitConfig()
 
-	db := config.NewPostgresSQLConnection()
+	db := database.InitPostgres()
 
 	store := sqlstore.New(db)
 

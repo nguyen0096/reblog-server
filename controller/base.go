@@ -15,10 +15,11 @@ type baseController struct {
 
 type controllers struct {
 	user *userController
+	todo *todoController
 }
 
 // New ...
-func New(store store.Store) IController {
+func New(store store.Store) Controller {
 	if store == nil {
 		log.Panicf("nil store param")
 	}
@@ -28,6 +29,7 @@ func New(store store.Store) IController {
 	}
 
 	base.user = newUserController(base)
+	base.todo = newTodoController(base)
 
 	return base
 }
@@ -35,4 +37,8 @@ func New(store store.Store) IController {
 // Implement interface
 func (c baseController) User() IUserController {
 	return c.user
+}
+
+func (c baseController) Todo() ITodoController {
+	return c.todo
 }
