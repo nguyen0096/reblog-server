@@ -1,4 +1,4 @@
-package controller
+package service
 
 import (
 	"fmt"
@@ -8,11 +8,18 @@ import (
 	"github.com/google/uuid"
 )
 
-type todoController struct {
-	base *baseController
+type TodoController interface {
+	Create(todo *model.Todo) (*Response, error)
+	GetAll() ([]model.Todo, error)
+	Update(todo *model.Todo) (*Response, error)
+	Delete(id string) (*Response, error)
 }
 
-func newTodoController(base *baseController) *todoController {
+type todoController struct {
+	base *baseService
+}
+
+func newTodoController(base *baseService) *todoController {
 	return &todoController{
 		base: base,
 	}

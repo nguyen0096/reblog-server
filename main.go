@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 	"os/signal"
-	"reblog-server/controller"
-	"reblog-server/presenter/http"
+	"reblog-server/api/http"
+	"reblog-server/service"
 	"reblog-server/store/sqlstore"
 	"reblog-server/utils/config"
 	"reblog-server/utils/database"
@@ -18,7 +18,7 @@ func main() {
 
 	store := sqlstore.New(db)
 
-	ctrl := controller.New(store)
+	ctrl := service.New(store)
 
 	router := http.Init(ctrl)
 	router.Run()

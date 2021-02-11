@@ -1,4 +1,4 @@
-package controller
+package service
 
 type Error struct {
 	Code     int    `json:"code"`

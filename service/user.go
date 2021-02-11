@@ -1,4 +1,4 @@
-package controller
+package service
 
 import (
 	"reblog-server/model"
@@ -11,11 +11,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type userController struct {
-	base *baseController
+type UserController interface {
+	CreateUserFromSignUp(user *model.User) error
+	CreateToken(user *model.User) (string, error)
 }
 
-func newUserController(base *baseController) *userController {
+type userController struct {
+	base *baseService
+}
+
+func newUserController(base *baseService) *userController {
 	return &userController{
 		base: base,
 	}

@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"reblog-server/controller"
 	"reblog-server/middleware"
+	"reblog-server/service"
 	"reblog-server/utils"
 	"reblog-server/utils/config"
 
@@ -19,7 +19,7 @@ type APIServer struct {
 
 	Mux *mux.Router
 	RouterGroups
-	Controller controller.Controller
+	Controller service.App
 }
 
 type RouterGroups struct {
@@ -33,7 +33,7 @@ type RouterGroups struct {
 
 // Implement interface
 
-func Init(ctrl controller.Controller) *APIServer {
+func Init(ctrl service.App) *APIServer {
 	api := &APIServer{
 		Controller: ctrl,
 	}
