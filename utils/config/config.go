@@ -1,7 +1,8 @@
 package config
 
 import (
-	"fmt"
+	"os"
+	"reblog-server/utils"
 
 	"github.com/spf13/viper"
 )
@@ -37,12 +38,21 @@ var (
 )
 
 func InitConfig() {
+	var err error
+
+	currentWD, err := os.Getwd()
+	utils.Info("currentWD: %v", currentWD)
+	if err != nil {
+		utils.Error("[config.InitConfig] cannot get current working dir. err: %v", err)
+		currentWD = "."
+	}
+
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-	err := viper.ReadInConfig()
+	viper.AddConfigPath(currentWD)
+	err = viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		utils.Panic("[config.InitConfig] cannot get config file. err: %v", err)
 	}
 
 	App = &Config{}

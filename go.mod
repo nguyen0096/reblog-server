@@ -13,12 +13,15 @@ require (
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/lib/pq v1.8.0
+	github.com/mattn/go-sqlite3 v1.14.6 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/spf13/viper v1.7.1
-	github.com/stretchr/testify v1.4.0 // indirect
-	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/sys v0.0.0-20201211090839-8ad439b19e0f // indirect
 	google.golang.org/grpc v1.27.0
 	google.golang.org/protobuf v1.25.0
 	gopkg.in/yaml.v2 v2.3.0 // indirect
+	gorm.io/driver/postgres v1.0.8
+	gorm.io/driver/sqlite v1.1.4 // indirect
+	gorm.io/gorm v1.20.12
 )

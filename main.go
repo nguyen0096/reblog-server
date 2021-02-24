@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"os/signal"
-	"reblog-server/api/grpc"
 	"reblog-server/api/http"
 	"reblog-server/service"
 	"reblog-server/store/sqlstore"
@@ -15,9 +14,10 @@ import (
 func main() {
 	config.InitConfig()
 
-	db := database.InitPostgres()
-
-	store := sqlstore.New(db)
+	store := sqlstore.New()
+	store.SetSqlxConn(database.NewPostgresSqlxConn())
+	store.SetGormConn(database.NewPostgresGormConn())
+	store.Migrate()
 
 	ctrl := service.New(store)
 
@@ -25,7 +25,9 @@ func main() {
 	router.Run()
 	defer router.Close()
 
-	grpc.NewGRPCServer(ctrl.Todo())
+	// grpcServer := grpc.NewGRPCServer(ctrl.Todo())
+	// go grpcServer.Run()
+	// defer grpcServer.Stop()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

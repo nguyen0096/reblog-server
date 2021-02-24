@@ -27,7 +27,7 @@ func (c todoSqlStore) Create(newTodo *model.Todo) (sql.Result, error) {
 
 	queryStr := fmt.Sprintf("INSERT INTO todo (uuid, title, short_description, description, created_by) VALUES ($1, $2, $3, $4, $5)")
 
-	res, err := c.base.db.Exec(queryStr, newTodo.UUID, newTodo.Title, newTodo.ShortDescription.String, newTodo.Description.String, newTodo.CreatedBy.String)
+	res, err := c.base.sqlxConn.Exec(queryStr, newTodo.UUID, newTodo.Title, newTodo.ShortDescription.String, newTodo.Description.String, newTodo.CreatedBy.String)
 	if err != nil {
 		utils.Error("[todoSqlStore] Failed to exec query")
 		return nil, err
@@ -40,7 +40,7 @@ func (c todoSqlStore) GetByID(id string) (*model.Todo, error) {
 	var err error
 	var todo *model.Todo
 
-	row := c.base.db.QueryRowx("SELECT * FROM todo WHERE id=$1", id)
+	row := c.base.sqlxConn.QueryRowx("SELECT * FROM todo WHERE id=$1", id)
 	err = row.StructScan(&todo)
 	if err != nil {
 		utils.Error("[todoSqlStore] Failed to scan struct")
@@ -54,7 +54,7 @@ func (c todoSqlStore) GetAll() ([]model.Todo, error) {
 	var err error
 	var todos []model.Todo
 
-	rows, err := c.base.db.Queryx("SELECT * FROM todo")
+	rows, err := c.base.sqlxConn.Queryx("SELECT * FROM todo")
 	if err != nil {
 		utils.Error("[todoSqlStore] Failed to query")
 	}
@@ -105,7 +105,7 @@ func (c todoSqlStore) UpdateByID(id string, todo *model.Todo) (sql.Result, error
 
 	utils.Info("%s", queryStr)
 
-	res, err := c.base.db.Exec(queryStr)
+	res, err := c.base.sqlxConn.Exec(queryStr)
 	if err != nil {
 		utils.Error("[todoSqlStore] Failed to exec query: %s", queryStr)
 		return nil, err
@@ -117,7 +117,7 @@ func (c todoSqlStore) UpdateByID(id string, todo *model.Todo) (sql.Result, error
 func (c todoSqlStore) DeleteByID(id string) (sql.Result, error) {
 	var err error
 
-	res, err := c.base.db.Exec("DELETE FROM todo WHERE id=$1", id)
+	res, err := c.base.sqlxConn.Exec("DELETE FROM todo WHERE id=$1", id)
 	if err != nil {
 		utils.Error("[todoSqlStore] Failed to exec query")
 		return nil, err
