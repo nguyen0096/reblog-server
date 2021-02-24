@@ -3,7 +3,7 @@ package sqlstore
 import (
 	"database/sql"
 	"fmt"
-	"reblog-server/model"
+	"reblog-server/domain/model"
 	"reblog-server/store/orm"
 	"reblog-server/utils"
 	"reflect"

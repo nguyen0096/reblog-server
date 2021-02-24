@@ -1,35 +1,36 @@
-package service
+package todo
 
 import (
 	"fmt"
-	"reblog-server/model"
+	"reblog-server/domain/model"
+	"reblog-server/store"
 	"reblog-server/utils"
 
 	"github.com/google/uuid"
 )
 
-type TodoController interface {
-	Create(todo *model.Todo) (*Response, error)
+type TodoService interface {
+	Create(todo *model.Todo) (*utils.Response, error)
 	GetAll() ([]model.Todo, error)
-	Update(todo *model.Todo) (*Response, error)
-	Delete(id string) (*Response, error)
+	Update(todo *model.Todo) (*utils.Response, error)
+	Delete(id string) (*utils.Response, error)
 }
 
-type todoController struct {
-	base *baseService
+type todoService struct {
+	store store.TodoStore
 }
 
-func newTodoController(base *baseService) *todoController {
-	return &todoController{
-		base: base,
+func NewTodoService(store store.TodoStore) TodoService {
+	return &todoService{
+		store: store,
 	}
 }
 
-func (c *todoController) Get(id string) (*model.Todo, error) {
+func (c *todoService) Get(id string) (*model.Todo, error) {
 	var err error
 	var todo *model.Todo
 
-	todo, err = c.base.store.Todo().GetByID(id)
+	todo, err = c.store.GetByID(id)
 	if err != nil {
 		utils.Error("[todoController] Failed to get Todo by id %s. Error: %s", id, err)
 		return nil, err
@@ -38,11 +39,11 @@ func (c *todoController) Get(id string) (*model.Todo, error) {
 	return todo, nil
 }
 
-func (c *todoController) GetAll() ([]model.Todo, error) {
+func (c *todoService) GetAll() ([]model.Todo, error) {
 	var err error
 	var todos []model.Todo
 
-	todos, err = c.base.store.Todo().GetAll()
+	todos, err = c.store.GetAll()
 	if err != nil {
 		utils.Error("[todoController] Failed to get all Todo. Error: %s", err)
 		return nil, err
@@ -51,7 +52,7 @@ func (c *todoController) GetAll() ([]model.Todo, error) {
 	return todos, nil
 }
 
-func (c *todoController) Create(todo *model.Todo) (*Response, error) {
+func (c *todoService) Create(todo *model.Todo) (*utils.Response, error) {
 	var err error
 	var id uuid.UUID
 
@@ -62,7 +63,7 @@ func (c *todoController) Create(todo *model.Todo) (*Response, error) {
 
 	idStrVal := id.String()
 	todo.UUID = idStrVal
-	res, err := c.base.store.Todo().Create(todo)
+	res, err := c.store.Create(todo)
 	if err != nil {
 		utils.Error("[todoController] Failed to create todo. Error: %s", err)
 		return nil, err
@@ -74,25 +75,25 @@ func (c *todoController) Create(todo *model.Todo) (*Response, error) {
 		return nil, err
 	}
 
-	return &Response{
+	return &utils.Response{
 		Message:      fmt.Sprintf("Created new Todo"),
 		RowsAffected: int(rowsAffected),
 	}, nil
 }
 
-func (c *todoController) Update(todo *model.Todo) (*Response, error) {
+func (c *todoService) Update(todo *model.Todo) (*utils.Response, error) {
 	var err error
 
 	// Validate fields
 	id := todo.ID
 	if id == "" {
 		utils.Error("[todoController] Can't update Todo due to missing ID field")
-		return nil, &Error{
+		return nil, &utils.AppError{
 			Message: "Missing id field",
 		}
 	}
 
-	res, err := c.base.store.Todo().UpdateByID(id, todo)
+	res, err := c.store.UpdateByID(id, todo)
 	if err != nil {
 		utils.Error("[todoController] Failed to update todo")
 		return nil, err
@@ -104,16 +105,16 @@ func (c *todoController) Update(todo *model.Todo) (*Response, error) {
 		return nil, err
 	}
 
-	return &Response{
+	return &utils.Response{
 		Message:      fmt.Sprintf("Updated Todo item of Id %s", id),
 		RowsAffected: int(rowsAffected),
 	}, nil
 }
 
-func (c *todoController) Delete(id string) (*Response, error) {
+func (c *todoService) Delete(id string) (*utils.Response, error) {
 	var err error
 
-	res, err := c.base.store.Todo().DeleteByID(id)
+	res, err := c.store.DeleteByID(id)
 	if err != nil {
 		utils.Error("[todoController] Failed to delete todo")
 		return nil, err
@@ -125,7 +126,7 @@ func (c *todoController) Delete(id string) (*Response, error) {
 		return nil, err
 	}
 
-	return &Response{
+	return &utils.Response{
 		Message:      fmt.Sprintf("Deleted Todo item of id %s", id),
 		RowsAffected: int(rowsAffected),
 	}, nil

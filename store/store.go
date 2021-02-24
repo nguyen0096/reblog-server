@@ -2,7 +2,7 @@ package store
 
 import (
 	"database/sql"
-	"reblog-server/model"
+	"reblog-server/domain/model"
 )
 
 type Store interface {

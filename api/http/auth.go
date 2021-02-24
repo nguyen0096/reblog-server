@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"reblog-server/model"
+	"reblog-server/domain/model"
 	"reblog-server/utils"
 )
 
@@ -24,7 +24,7 @@ func (api *APIServer) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := api.Controller.User().CreateToken(&u)
+	token, err := api.Service.User().CreateToken(&u)
 	if err != nil {
 		api.error(w, http.StatusBadRequest, err)
 		return

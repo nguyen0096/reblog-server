@@ -19,7 +19,7 @@ type APIServer struct {
 
 	Mux *mux.Router
 	RouterGroups
-	Controller service.App
+	Service service.App
 }
 
 type RouterGroups struct {
@@ -33,9 +33,9 @@ type RouterGroups struct {
 
 // Implement interface
 
-func Init(ctrl service.App) *APIServer {
+func Init(sv service.App) *APIServer {
 	api := &APIServer{
-		Controller: ctrl,
+		Service: sv,
 	}
 
 	// Config for all routes

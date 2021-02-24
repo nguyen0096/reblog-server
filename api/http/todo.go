@@ -2,7 +2,7 @@ package http
 
 import (
 	"net/http"
-	"reblog-server/model"
+	"reblog-server/domain/model"
 
 	"github.com/gorilla/mux"
 )
@@ -25,7 +25,7 @@ func (api *APIServer) getAllTodo(w http.ResponseWriter, r *http.Request) {
 	var err error
 	var todos []model.Todo
 
-	todos, err = api.Controller.Todo().GetAll()
+	todos, err = api.Service.Todo().GetAll()
 	if err != nil {
 		api.error(w, http.StatusInternalServerError, err)
 	}
@@ -43,7 +43,7 @@ func (api *APIServer) createTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := api.Controller.Todo().Create(todo)
+	res, err := api.Service.Todo().Create(todo)
 	if err != nil {
 		api.error(w, http.StatusInternalServerError, err)
 		return
@@ -62,7 +62,7 @@ func (api *APIServer) updateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := api.Controller.Todo().Update(todo)
+	res, err := api.Service.Todo().Update(todo)
 	if err != nil {
 		api.error(w, http.StatusInternalServerError, err)
 		return
@@ -74,7 +74,7 @@ func (api *APIServer) updateTodo(w http.ResponseWriter, r *http.Request) {
 func (api *APIServer) deleteTodo(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 
-	res, err := api.Controller.Todo().Delete(id)
+	res, err := api.Service.Todo().Delete(id)
 	if err != nil {
 		api.error(w, http.StatusInternalServerError, err)
 		return

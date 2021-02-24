@@ -1,24 +1,26 @@
 package service
 
 import (
+	"reblog-server/service/todo"
+	"reblog-server/service/user"
 	"reblog-server/store"
 	"reblog-server/utils"
 )
 
 type App interface {
-	User() UserController
-	Todo() TodoController
+	User() user.UserService
+	Todo() todo.TodoService
 }
 
-type baseService struct {
+type appService struct {
 	store store.Store
 
 	services
 }
 
 type services struct {
-	user *userController
-	todo *todoController
+	user user.UserService
+	todo todo.TodoService
 }
 
 // New return a base controller
@@ -27,21 +29,19 @@ func New(store store.Store) App {
 		utils.Panic("nil store param")
 	}
 
-	base := &baseService{
+	base := &appService{
 		store: store,
 	}
 
-	base.user = newUserController(base)
-	base.todo = newTodoController(base)
+	base.user = user.NewUserService(store.User())
 
 	return base
 }
 
-// Interface implementation
-func (c baseService) User() UserController {
+func (c *appService) User() user.UserService {
 	return c.user
 }
 
-func (c baseService) Todo() TodoController {
+func (c *appService) Todo() todo.TodoService {
 	return c.todo
 }

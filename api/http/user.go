@@ -3,7 +3,7 @@ package http
 import (
 	"net/http"
 
-	"reblog-server/model"
+	"reblog-server/domain/model"
 	"reblog-server/utils"
 )
 
@@ -32,7 +32,7 @@ func (api *APIServer) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = api.Controller.User().CreateUserFromSignUp(user)
+	err = api.Service.User().CreateUserFromSignUp(user)
 	if err != nil {
 		api.error(w, http.StatusBadRequest, err)
 		return

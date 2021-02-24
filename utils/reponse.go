@@ -1,6 +1,6 @@
-package service
+package utils
 
-type Error struct {
+type AppError struct {
 	Code     int    `json:"code"`
 	Message  string `json:"message"`
 	Detail   string `json:"detail"`
@@ -8,11 +8,17 @@ type Error struct {
 	RawError error  `json:""`
 }
 
-func (c *Error) Error() string {
+func (c *AppError) Error() string {
 	return c.Message
 }
 
 type Response struct {
 	Message      string `json:"message"`
 	RowsAffected int    `json:"rows_affected"`
+}
+
+// Result new service response
+type Result struct {
+	Message string `json:"message"`
+	Error   error  `json:"error"`
 }

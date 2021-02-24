@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"os/signal"
+	"reblog-server/api/grpc"
 	"reblog-server/api/http"
 	"reblog-server/service"
 	"reblog-server/store/sqlstore"
@@ -23,6 +24,8 @@ func main() {
 	router := http.Init(ctrl)
 	router.Run()
 	defer router.Close()
+
+	grpc.NewGRPCServer(ctrl.Todo())
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)

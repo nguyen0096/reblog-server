@@ -1,7 +1,8 @@
-package service
+package user
 
 import (
-	"reblog-server/model"
+	"reblog-server/domain/model"
+	"reblog-server/store"
 	"reblog-server/utils"
 	"reblog-server/utils/config"
 	"time"
@@ -11,25 +12,25 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserController interface {
+type UserService interface {
 	CreateUserFromSignUp(user *model.User) error
 	CreateToken(user *model.User) (string, error)
 }
 
-type userController struct {
-	base *baseService
+type userService struct {
+	store store.UserStore
 }
 
-func newUserController(base *baseService) *userController {
-	return &userController{
-		base: base,
+func NewUserService(store store.UserStore) UserService {
+	return &userService{
+		store: store,
 	}
 }
 
-func (c *userController) CreateToken(user *model.User) (string, error) {
+func (c *userService) CreateToken(user *model.User) (string, error) {
 	var err error
 
-	queryUser, err := c.base.store.User().GetByUsername(user.Username)
+	queryUser, err := c.store.GetByUsername(user.Username)
 	if err != nil {
 		return "", err
 	}
@@ -52,7 +53,7 @@ func (c *userController) CreateToken(user *model.User) (string, error) {
 	return string(token), nil
 }
 
-func (c *userController) CreateUserFromSignUp(user *model.User) error {
+func (c *userService) CreateUserFromSignUp(user *model.User) error {
 	var hashedPw []byte
 	var id uuid.UUID
 	var err error
@@ -68,6 +69,6 @@ func (c *userController) CreateUserFromSignUp(user *model.User) error {
 	user.Password = string(hashedPw)
 	user.ID = id.String()
 
-	err = c.base.store.User().Create(user)
+	err = c.store.Create(user)
 	return err
 }
