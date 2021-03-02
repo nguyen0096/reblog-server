@@ -57,6 +57,7 @@ func (c todoSqlStore) GetAll() ([]model.Todo, error) {
 	rows, err := c.base.sqlxConn.Queryx("SELECT * FROM todo")
 	if err != nil {
 		utils.Error("[todoSqlStore] Failed to query")
+		return nil, err
 	}
 
 	for rows.Next() {

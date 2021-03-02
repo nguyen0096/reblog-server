@@ -34,6 +34,7 @@ func New(store store.Store) App {
 	}
 
 	base.user = user.NewUserService(store.User())
+	base.todo = todo.NewTodoService(store.Todo())
 
 	return base
 }

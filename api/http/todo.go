@@ -28,6 +28,7 @@ func (api *APIServer) getAllTodo(w http.ResponseWriter, r *http.Request) {
 	todos, err = api.Service.Todo().GetAll()
 	if err != nil {
 		api.error(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	api.respond(w, http.StatusOK, todos)
