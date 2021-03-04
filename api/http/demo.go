@@ -16,7 +16,8 @@ func (c *APIServer) initDemoAPI() {
 
 // Ping
 func (c *APIServer) Pong(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("pong"))
+	test := r.Context().Value("userid")
+	w.Write([]byte("pong" + test.(string)))
 }
 
 // Routine

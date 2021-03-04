@@ -41,8 +41,9 @@ func Init(sv service.App) *APIServer {
 	// Config for all routes
 	api.Mux = mux.NewRouter()
 	api.Mux.NotFoundHandler = api.notFoundHandler()
+
 	api.Mux.Use(middleware.Logger)
-	api.Mux.Use(middleware.Authenticator)
+	api.Mux.Use(middleware.Authenticator(sv.User()))
 
 	// API
 	api.Root = api.Mux

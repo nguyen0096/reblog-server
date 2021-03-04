@@ -19,6 +19,6 @@ func NewGenericSqlStore(db *gorm.DB) GenericSqlStore {
 	}
 }
 
-func (c *genericSqlStore) {
+func (c *genericSqlStore) Create() {
 
 }
