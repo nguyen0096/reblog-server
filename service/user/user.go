@@ -6,11 +6,11 @@ import (
 	"reblog-server/store"
 	"reblog-server/utils"
 	"reblog-server/utils/config"
+	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
-	"github.com/mitchellh/mapstructure"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -30,24 +30,31 @@ func NewUserService(store store.UserStore) UserService {
 	}
 }
 
+type Token struct {
+}
+
 func (c *userService) VerifyToken(bearerToken string) bool {
 	// bearerToken := strings.Split(authorizationHeader, " ")
-	token, err := jwt.Parse(bearerToken, func(token *jwt.Token) (interface{}, error) {
+	claims := jwt.MapClaims{}
+	_, err := jwt.ParseWithClaims(bearerToken, claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("There was an error")
 		}
-		return []byte("secret"), nil
+		return []byte(config.App.Auth.JWTSecret), nil
 	})
 
 	if err != nil {
 		utils.Error("Error: %s", err)
 	}
 
-	var exp time.Duration
-	mapstructure.Decode(token.Claims, &exp)
+	i, err := strconv.ParseInt(claims["exp"].(string), 10, 64)
+	if err != nil {
+		utils.Error("failed to parse unix string to int64. err: %s", err)
+		return false
+	}
 
-	utils.Info("Exp: %v", exp)
-	return false
+	tm := time.Unix(i, 0)
+	return time.Now().Before(tm)
 }
 
 func (c *userService) CreateToken(user *model.User) (string, error) {
@@ -66,7 +73,8 @@ func (c *userService) CreateToken(user *model.User) (string, error) {
 	atClaims := jwt.MapClaims{}
 	// atClaims["authorized"] = true
 	atClaims["user_id"] = user.Username
-	atClaims["exp"] = time.Now().Add(time.Hour * 48).Unix()
+	atClaims["exp"] = strconv.FormatInt(time.Now().Add(30*time.Second).Unix(), 10)
+	utils.Info("Exp: %s", atClaims["exp"])
 	at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
 	token, err := at.SignedString([]byte(config.App.Auth.JWTSecret))
 	if err != nil {

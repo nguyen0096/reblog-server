@@ -24,6 +24,7 @@ func (api *APIServer) createUser(w http.ResponseWriter, r *http.Request) {
 
 	if user, err = model.UserFromJson(r.Body); err != nil {
 		api.error(w, http.StatusBadRequest, err)
+		utils.Error("failed to parse user json. err: %s", err)
 		return
 	}
 
